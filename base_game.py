@@ -20,7 +20,7 @@ class Moving(Enum):
 
 Point = namedtuple('Point', 'x , y')
 BLOCK_SIZE = 20
-SPEED = 40
+SPEED = 10
 WHITE = (255, 255, 255)
 RED = (200,0,0)
 GREEN = (0,128,0)
@@ -83,11 +83,21 @@ class SnakeGame():
         self._move(self.direction)
         self.snake.insert(0,self.head)
 
-        # check if snake runs into border
+        # check if snake kena tiang or makan sendiri
+        gg = False
+        if self._kena_tiang():
+            gg = True
+            return gg, self.score
+
+        # make new food for mah snake
+        if self.head == self.food:
+            self.score += 1
+            self._place_food()
+        else:
+            self.snake.pop()
+
         self.update_ui()
         self.clock.tick(SPEED)
-        # game over
-        gg = False
         return gg, self.score
 
 
@@ -121,6 +131,16 @@ class SnakeGame():
         # update coords
         self.head = Point(x,y)
 
+    def _kena_tiang(self):
+        # kena tiang
+        if self.head.x > self.w - BLOCK_SIZE or self.head.x < 0 or self.head.y > self.h - BLOCK_SIZE or self.head.y < 0:
+            return True
+        
+        # makan sendiri
+        # check from head to tail
+        if self.head in self.snake[1:]:
+            return True
+        return False
 
 # driver code
 if __name__ == '__main__':
