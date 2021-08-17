@@ -64,12 +64,32 @@ class SnakeGame():
             self._place_food()
 
     def play_step(self):
+        # get user input
+        for input in pygame.event.get():
+            if input.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if input.type == pygame.KEYDOWN:
+                if input.key == pygame.K_LEFT:
+                    self.direction = Moving.LEFT
+                elif input.key == pygame.K_RIGHT:
+                    self.direction = Moving.RIGHT
+                elif input.key == pygame.K_UP:
+                    self.direction = Moving.UP
+                elif input.key == pygame.K_DOWN:
+                    self.direction = Moving.DOWN
         
+        # update the head
+        self._move(self.direction)
+        self.snake.insert(0,self.head)
+
+        # check if snake runs into border
         self.update_ui()
         self.clock.tick(SPEED)
         # game over
         gg = False
         return gg, self.score
+
 
     def update_ui(self):
         # background
@@ -83,6 +103,24 @@ class SnakeGame():
         text = font.render("Score: " + str(self.score), True, WHITE)
         self.display.blit(text, [0,0])
         pygame.display.flip()
+
+    def _move(self, direction):
+        # get the current snake coords
+        x = self.head.x
+        y = self.head.y
+
+        if direction == Moving.RIGHT:
+            x += BLOCK_SIZE
+        elif direction == Moving.LEFT:
+            x -= BLOCK_SIZE
+        elif direction == Moving.UP:
+            y -= BLOCK_SIZE
+        elif direction == Moving.DOWN:
+            y += BLOCK_SIZE
+        
+        # update coords
+        self.head = Point(x,y)
+
 
 # driver code
 if __name__ == '__main__':
